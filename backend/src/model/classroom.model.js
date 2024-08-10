@@ -4,6 +4,7 @@ const classroomSchema = Schema({
   name: {
     type: String,
     trim: true,
+    unique: true,
     required: true,
   },
   day: {
@@ -27,6 +28,10 @@ const classroomSchema = Schema({
   },
   endTime: {
     type: Date,
+    required: true,
+  },
+  teacher: {
+    type: mongoose.Types.ObjectId,
     required: true,
   },
 });
