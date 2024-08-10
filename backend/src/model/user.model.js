@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { roles } from "../utils/constants.js";
 
 const userSchema = mongoose.Schema({
   role: {
     type: String,
     enum: {
-      values: ["Principal", "Teacher", "Student"],
+      values: roles,
       message: "{VALUE} is not supported",
     },
   },
@@ -20,6 +21,9 @@ const userSchema = mongoose.Schema({
     type: String,
     trim: true,
     required: true,
+  },
+  refreshToken: {
+    type: String,
   },
 });
 
