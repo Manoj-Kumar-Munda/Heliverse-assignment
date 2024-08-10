@@ -154,4 +154,28 @@ const login = async (req, res, next) => {
   }
 };
 
-export { signup, login };
+const getTeachers = async (req, res) => {
+  try {
+    if (req.user.role !== "Principal") {
+      return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
+    }
+    const teachers = await User.find({ role: "Teacher" });
+    return res.status(200).json(new ApiResponse(200, teachers));
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getStudents = async (req, res) => {
+  try {
+    if (req.user.role !== "Principal") {
+      return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
+    }
+    const students = await User.find({ role: "Student" });
+    return res.status(200).json(new ApiResponse(200, students));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { signup, login, getTeachers, getStudents };
