@@ -159,7 +159,9 @@ const getTeachers = async (req, res) => {
     if (req.user.role !== "Principal") {
       return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
     }
-    const teachers = await User.find({ role: "Teacher" });
+    const teachers = await User.find({ role: "Teacher" }).select(
+      "-password -refreshToken"
+    );
     return res.status(200).json(new ApiResponse(200, teachers));
   } catch (error) {
     next(error);
@@ -171,7 +173,9 @@ const getStudents = async (req, res) => {
     if (req.user.role !== "Principal") {
       return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
     }
-    const students = await User.find({ role: "Student" });
+    const students = await User.find({ role: "Student" }).select(
+      "-password -refreshToken"
+    );
     return res.status(200).json(new ApiResponse(200, students));
   } catch (error) {
     next(error);
