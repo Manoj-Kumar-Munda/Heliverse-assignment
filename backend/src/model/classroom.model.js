@@ -24,10 +24,6 @@ const classroomSchema = Schema({
     type: String,
     required: true,
   },
-  teacher: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
 });
 
 export const Classroom = mongoose.model("Classroom", classroomSchema);

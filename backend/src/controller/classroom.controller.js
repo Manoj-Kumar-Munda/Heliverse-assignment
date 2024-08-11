@@ -80,15 +80,34 @@ const getClassrooms = async (req, res, next) => {
 };
 
 const getStudents = async (req, res, next) => {
-  const { teacherId } = req.body;
-  //extract classroomId from User collection where techerId is matched and match the classroomId with role=Student from User collection
+  try {
+    if (req.user.role !== "Teacher") {
+      return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
+    }
+    const teacher = req.user;
+    console.log(teacher);
 
+    const classroom = teacher?.classroom;
+    if (!classroom) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "", "classroom is not assigned"));
+    }
+    const students = await User.find({ role: "Student", classroom }).select("-password -refreshToken");
+
+    return res.status(200).json(new ApiResponse(200, students));
+  } catch (error) {
+    next(error);
+  }
 };
 
 const assignTeacher = async (req, res, next) => {
   const { teacherId } = req.body;
   const { classroomId } = req.params;
   try {
+    if (req.user.role !== "Principal") {
+      return res.status(400).json(new ApiResponse(403, "", "Not authorized"));
+    }
     const classroom = await Classroom.findById(classroomId);
     if (!classroom) {
       return res
@@ -107,8 +126,6 @@ const assignTeacher = async (req, res, next) => {
         .status(400)
         .json(new ApiResponse(400, "", "Invalid teacherId"));
     }
-    console.log(teacher);
-
     return res.status(200).json(new ApiResponse(200, teacher));
   } catch (error) {
     next(error);
