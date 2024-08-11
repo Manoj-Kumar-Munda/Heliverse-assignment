@@ -202,7 +202,7 @@ const updateStudent = async (req, res, next) => {
     if (!updatedStudent) {
       return res
         .status(400)
-        .json(new ApiResponse(400, "", "Failed to update student"));
+        .json(new ApiResponse(500, "", "Failed to update student"));
     }
 
     return res
@@ -213,9 +213,35 @@ const updateStudent = async (req, res, next) => {
   }
 };
 
-const updateTeacher = async (req, res, next) => {};
+const updateTeacher = async (req, res, next) => {
+  const { name, email, classroom, teacherId } = req.body;
+  try {
+    if (req.user.role !== "Principal") {
+      return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
+    }
+    const updatedTeacher = await User.findByIdAndUpdate(
+      teacherId,
+      {
+        name,
+        email,
+        classroom,
+      },
+      { new: true }
+    ).select("-password -refreshToken");
 
-const deleteUser = async (req, res, next) => {};
+    if (!updatedTeacher) {
+      return res
+        .status(400)
+        .json(new ApiResponse(500, "", "Failed to update teacher"));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, updatedTeacher, "Data updated"));
+  } catch (error) {
+    next(error);
+  }
+};
 
 const assignTeacherToStudent = async (req, res, next) => {
   const { studentId, teacherId } = req.body;
@@ -273,6 +299,24 @@ const assignTeacherToStudent = async (req, res, next) => {
   }
 };
 
+const deleteUser = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    if (req.user.role !== "Principal") {
+      return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
+    }
+    if (!id) {
+      return res.status(400).json(new ApiResponse(400, "", "Id is required"));
+    }
+    const user = await User.findByIdAndDelete(id);
+    console.log("deletedUser: ", user);
+
+    return res.status(200).json(new ApiResponse(200, "", "User deleted"));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   signup,
   login,
@@ -280,4 +324,6 @@ export {
   getStudents,
   assignTeacherToStudent,
   updateStudent,
+  updateTeacher,
+  deleteUser,
 };
