@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { days } from "../utils/constants.js";
 
 const classroomSchema = Schema({
   name: {
@@ -10,14 +11,7 @@ const classroomSchema = Schema({
   day: {
     type: String,
     enum: {
-      values: [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ],
+      values: days,
       message: "{VALUE} is not supported",
     },
     required: true,
@@ -31,9 +25,16 @@ const classroomSchema = Schema({
     required: true,
   },
   teacher: {
-    type: mongoose.Types.ObjectId,
+    type: Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
+  students: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
 });
 
 export const Classroom = mongoose.model("Classroom", classroomSchema);
