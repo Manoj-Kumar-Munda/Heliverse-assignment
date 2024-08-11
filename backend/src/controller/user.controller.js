@@ -317,6 +317,15 @@ const deleteUser = async (req, res, next) => {
   }
 };
 
+const getCurrentUser = async (req, res, next) => {
+  try {
+    const user = req.user;
+    return res.status(200).json(new ApiResponse(200, user));
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   signup,
   login,
@@ -326,4 +335,5 @@ export {
   updateStudent,
   updateTeacher,
   deleteUser,
+  getCurrentUser,
 };

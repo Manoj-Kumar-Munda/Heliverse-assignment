@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   assignTeacherToStudent,
   deleteUser,
+  getCurrentUser,
   getStudents,
   getTeachers,
   login,
@@ -20,6 +21,7 @@ userRouter.route("/students").get(verifyToken, getStudents);
 userRouter.route("/assign-teacher").post(verifyToken, assignTeacherToStudent);
 userRouter.route("/updateStudent").put(verifyToken, updateStudent);
 userRouter.route("/updateTeacher").put(verifyToken, updateTeacher);
-userRouter.route("/delete/:id").delete(verifyToken, deleteUser)
+userRouter.route("/delete/:id").delete(verifyToken, deleteUser);
+userRouter.route("/current-user").get(verifyToken, getCurrentUser);
 
 export default userRouter;

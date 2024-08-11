@@ -71,8 +71,10 @@ const createClassroom = async (req, res, next) => {
 
 const getClassrooms = async (req, res, next) => {
   try {
+    if (!(req.user.role === "Principal" || req.user.role === "Teacher")) {
+      return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
+    }
     const classrooms = await Classroom.find();
-    console.log(classrooms);
     return res.status(200).json(new ApiResponse(200, classrooms, ""));
   } catch (error) {
     next(error);
@@ -93,7 +95,9 @@ const getStudents = async (req, res, next) => {
         .status(400)
         .json(new ApiResponse(400, "", "classroom is not assigned"));
     }
-    const students = await User.find({ role: "Student", classroom }).select("-password -refreshToken");
+    const students = await User.find({ role: "Student", classroom }).select(
+      "-password -refreshToken"
+    );
 
     return res.status(200).json(new ApiResponse(200, students));
   } catch (error) {
