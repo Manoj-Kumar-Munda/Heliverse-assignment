@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { roles } from "../utils/constants.js";
@@ -21,6 +21,16 @@ const userSchema = mongoose.Schema({
     type: String,
     trim: true,
     required: true,
+  },
+  classroom: {
+    //for student and teacher only
+    type: Schema.Types.ObjectId,
+    ref: "Classroom"
+  },
+  teacher:{
+    //for student only
+    type: Schema.Types.ObjectId,
+    ref: "User"
   },
   refreshToken: {
     type: String,

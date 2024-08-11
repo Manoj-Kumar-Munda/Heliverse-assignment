@@ -1,7 +1,9 @@
+import mongoose, { Mongoose } from "mongoose";
 import { User } from "../model/user.model.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import { roles } from "../utils/constants.js";
 import { isAuthorizedToCreateAccount } from "../utils/helpers.js";
+import { Classroom } from "../model/classroom.model.js";
 
 const generateAccessAndRefreshTokens = async (userId) => {
   const user = await User.findById(userId);
@@ -154,7 +156,7 @@ const login = async (req, res, next) => {
   }
 };
 
-const getTeachers = async (req, res) => {
+const getTeachers = async (req, res, next) => {
   try {
     if (req.user.role !== "Principal") {
       return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
@@ -168,7 +170,7 @@ const getTeachers = async (req, res) => {
   }
 };
 
-const getStudents = async (req, res) => {
+const getStudents = async (req, res, next) => {
   try {
     if (req.user.role !== "Principal") {
       return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
@@ -182,4 +184,66 @@ const getStudents = async (req, res) => {
   }
 };
 
-export { signup, login, getTeachers, getStudents };
+const updateStudent = async (req, res, next) => {};
+
+const updateTeacher = async (req, res, next) => {};
+
+const deleteUser = async (req, res, next) => {};
+
+const assignTeacherToStudent = async (req, res, next) => {
+  const { studentId, teacherId } = req.body;
+  try {
+    if (req.user.role !== "Principal") {
+      return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
+    }
+    if (!studentId) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "", "studentId required"));
+    }
+    if (!teacherId) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "", "teacherId required"));
+    }
+
+    const student = await User.findOne({
+      role: "Student",
+      _id: new mongoose.Types.ObjectId(studentId),
+    });
+    // console.log(student);
+    if (!student) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "", "Student doesn't exist"));
+    }
+    const teacher = await User.findOne({
+      role: "Teacher",
+      _id: new mongoose.Types.ObjectId(teacherId),
+    });
+    console.log(teacher);
+    if (!teacher) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "", "Teacher doesn't exist"));
+    }
+
+    if (!teacher?.classroom) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "", "First assign classroom to teacher"));
+    }
+    const updatedStudent = await User.findByIdAndUpdate(student._id, {
+      teacher: teacher._id,
+      classroom: teacher.classroom,
+    }).select("-password -refreshToken");
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, updatedStudent, "students data updated"));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export { signup, login, getTeachers, getStudents, assignTeacherToStudent };

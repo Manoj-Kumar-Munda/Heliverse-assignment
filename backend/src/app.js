@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRouter from "./router/user.router.js";
+import classroomRouter from "./router/classroom.router.js";
 import ApiResponse from "./utils/ApiResponse.js";
 
 const app = express();
@@ -18,6 +19,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use("/api/v1/user", userRouter);
+app.use("/api/v1/classroom", classroomRouter);
 
 app.use((err, req, res, next) => {
   const message = err?.message || "Internal server error";

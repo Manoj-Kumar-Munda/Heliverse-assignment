@@ -17,24 +17,17 @@ const classroomSchema = Schema({
     required: true,
   },
   startTime: {
-    type: Date,
+    type: String,
     required: true,
   },
   endTime: {
-    type: Date,
+    type: String,
     required: true,
   },
   teacher: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: true,
   },
-  students: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
 });
 
 export const Classroom = mongoose.model("Classroom", classroomSchema);
