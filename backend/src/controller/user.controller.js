@@ -184,7 +184,34 @@ const getStudents = async (req, res, next) => {
   }
 };
 
-const updateStudent = async (req, res, next) => {};
+const updateStudent = async (req, res, next) => {
+  const { name, email, studentId } = req.body;
+  try {
+    if (!(req.user.role === "Teacher" || req.user.role === "Principal")) {
+      return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
+    }
+    const updatedStudent = await User.findByIdAndUpdate(
+      studentId,
+      {
+        name,
+        email,
+      },
+      { new: true }
+    ).select("-password -refreshToken");
+
+    if (!updatedStudent) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "", "Failed to update student"));
+    }
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, updatedStudent, "Data updated"));
+  } catch (error) {
+    next(error);
+  }
+};
 
 const updateTeacher = async (req, res, next) => {};
 
@@ -246,4 +273,11 @@ const assignTeacherToStudent = async (req, res, next) => {
   }
 };
 
-export { signup, login, getTeachers, getStudents, assignTeacherToStudent };
+export {
+  signup,
+  login,
+  getTeachers,
+  getStudents,
+  assignTeacherToStudent,
+  updateStudent,
+};

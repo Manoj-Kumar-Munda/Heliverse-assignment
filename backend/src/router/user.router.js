@@ -5,6 +5,7 @@ import {
   getTeachers,
   login,
   signup,
+  updateStudent,
 } from "../controller/user.controller.js";
 import verifyToken from "../middleware/verifyToken.js";
 
@@ -15,5 +16,6 @@ userRouter.route("/login").post(login);
 userRouter.route("/teachers").get(verifyToken, getTeachers);
 userRouter.route("/students").get(verifyToken, getStudents);
 userRouter.route("/assign-teacher").post(verifyToken, assignTeacherToStudent);
+userRouter.route("/updateStudent").post(verifyToken,updateStudent)
 
 export default userRouter;

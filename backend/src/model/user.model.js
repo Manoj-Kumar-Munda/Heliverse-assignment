@@ -11,6 +11,9 @@ const userSchema = mongoose.Schema({
       message: "{VALUE} is not supported",
     },
   },
+  name: {
+    type: String,
+  },
   email: {
     type: String,
     trim: true,
@@ -25,12 +28,12 @@ const userSchema = mongoose.Schema({
   classroom: {
     //for student and teacher only
     type: Schema.Types.ObjectId,
-    ref: "Classroom"
+    ref: "Classroom",
   },
-  teacher:{
+  teacher: {
     //for student only
     type: Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",
   },
   refreshToken: {
     type: String,
