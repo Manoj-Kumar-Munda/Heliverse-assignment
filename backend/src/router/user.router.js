@@ -6,6 +6,7 @@ import {
   getStudents,
   getTeachers,
   login,
+  logoutUser,
   signup,
   updateStudent,
   updateTeacher,
@@ -16,6 +17,7 @@ const userRouter = Router();
 
 userRouter.route("/").post(verifyToken, signup);
 userRouter.route("/login").post(login);
+userRouter.route("/logout").post(verifyToken, logoutUser);
 userRouter.route("/teachers").get(verifyToken, getTeachers);
 userRouter.route("/students").get(verifyToken, getStudents);
 userRouter.route("/assign-teacher").post(verifyToken, assignTeacherToStudent);

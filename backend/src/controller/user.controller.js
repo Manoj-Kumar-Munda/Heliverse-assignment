@@ -156,6 +156,23 @@ const login = async (req, res, next) => {
   }
 };
 
+const logoutUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(req.user._id, {
+    $unset: { refreshToken: 1 },
+  });
+
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    sameSite: "strict",
+  });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    sameSite: "strict",
+  });
+  return res.status(200).json(new ApiResponse(200, "", "User logged Out"));
+});
+
 const getTeachers = async (req, res, next) => {
   try {
     if (req.user.role !== "Principal") {
@@ -336,4 +353,5 @@ export {
   updateTeacher,
   deleteUser,
   getCurrentUser,
+  logoutUser
 };
