@@ -192,9 +192,60 @@ const getStudents = async (req, res, next) => {
     if (req.user.role !== "Principal") {
       return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
     }
-    const students = await User.find({ role: "Student" }).select(
-      "-password -refreshToken"
-    );
+
+    const students = await User.aggregate([
+      {
+        $match: {
+          role: "Student",
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "teacher",
+          foreignField: "_id",
+          as: "teacher",
+          pipeline: [
+            {
+              $project: {
+                name: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$teacher",
+        },
+      },
+      {
+        $lookup: {
+          from: "classrooms",
+          localField: "classroom",
+          foreignField: "_id",
+          as: "classroom",
+          pipeline: [
+            {
+              $project: {
+                name: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$classroom",
+        },
+      },
+      {
+        $project: {
+          refreshToken: 0,
+          password: 0,
+        },
+      },
+    ]);
     return res.status(200).json(new ApiResponse(200, students));
   } catch (error) {
     next(error);
@@ -353,5 +404,5 @@ export {
   updateTeacher,
   deleteUser,
   getCurrentUser,
-  logoutUser
+  logoutUser,
 };
