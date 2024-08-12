@@ -178,9 +178,39 @@ const getTeachers = async (req, res, next) => {
     if (req.user.role !== "Principal") {
       return res.status(403).json(new ApiResponse(403, "", "Not authorized"));
     }
-    const teachers = await User.find({ role: "Teacher" }).select(
-      "-password -refreshToken"
-    );
+    const teachers = await User.aggregate([
+      {
+        $match: {
+          role: "Teacher",
+        },
+      },
+      {
+        $lookup: {
+          from: "classrooms",
+          localField: "classroom",
+          foreignField: "_id",
+          as: "classroom",
+          pipeline: [
+            {
+              $project: {
+                name: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $unwind: {
+          path: "$classroom",
+        },
+      },
+      {
+        $project: {
+          refreshToken: 0,
+          password: 0,
+        },
+      },
+    ]);
     return res.status(200).json(new ApiResponse(200, teachers));
   } catch (error) {
     next(error);
