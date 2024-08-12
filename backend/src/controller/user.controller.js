@@ -156,7 +156,7 @@ const login = async (req, res, next) => {
   }
 };
 
-const logoutUser = asyncHandler(async (req, res) => {
+const logoutUser = async (req, res) => {
   await User.findByIdAndUpdate(req.user._id, {
     $unset: { refreshToken: 1 },
   });
@@ -171,7 +171,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     sameSite: "strict",
   });
   return res.status(200).json(new ApiResponse(200, "", "User logged Out"));
-});
+};
 
 const getTeachers = async (req, res, next) => {
   try {
