@@ -1,9 +1,13 @@
-import React from 'react'
+import React from "react";
+import Header from "../components/Header";
+
 
 const MainLayout = () => {
   return (
-    <div>MainLayout</div>
-  )
-}
+    <>
+      <Header />
+    </>
+  );
+};
 
-export default MainLayout
+export default MainLayout;

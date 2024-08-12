@@ -6,6 +6,10 @@ import "./index.css";
 import Dashboard from "./pages/Dashboard.jsx";
 import Login from "./pages/Login.jsx";
 import Signup from "./pages/Signup.jsx";
+import { Provider } from "react-redux";
+import store from "./store/store.js";
+import MainLayout from "./layouts/MainLayout.jsx";
+import AuthLayout from "./layouts/AuthLayout.jsx";
 
 const router = createBrowserRouter([
   {
@@ -14,15 +18,21 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
-        element: <Dashboard />,
+        element: <MainLayout />,
       },
       {
-        path: "login",
-        element: <Login />,
-      },
-      {
-        path: "signup",
-        element: <Signup />,
+        path: "/auth",
+        element: <AuthLayout />,
+        children: [
+          {
+            path: "login",
+            element: <Login />,
+          },
+          {
+            path: "signup",
+            element: <Signup />,
+          },
+        ],
       },
     ],
   },
@@ -30,7 +40,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
-  
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   </StrictMode>
 );
